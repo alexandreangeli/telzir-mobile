@@ -1,7 +1,10 @@
-import {TextInput, Text} from 'react-native';
+import {Text, View, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {Picker} from '@react-native-community/picker';
 import axios, {AxiosResponse} from 'axios';
+import MyPicker from '../../components/MyPicker';
+import {colors} from '../../styleVariables';
+import MyTextInput from '../../components/MyTextInput';
+import MyFooterButton from '../../components/MyFooterButton';
 
 export default function Home() {
   interface ICallPrice {
@@ -31,12 +34,13 @@ export default function Home() {
       value: 120,
     },
   ];
-  const [plan, setPlan] = useState(plans[0]);
+  const [plan, setPlan] = useState({label: '', value: 0});
 
   useEffect(() => {
     async function getCallPrices() {
       axios
-        .get('http://10.0.2.2:5000/call_prices')
+        // .get('http://10.0.2.2:5000/call_prices')
+        .get('https://telzir-falemais-backend.herokuapp.com/call_prices')
         .then((r: AxiosResponse<ICallPrice[]>) => {
           setCallPrices(r.data);
           setOriginCities([
@@ -60,7 +64,7 @@ export default function Home() {
     ];
     setDestinationCities(newDestinationCities);
 
-    if (!newDestinationCities.includes(destination)) {
+    if (destination && !newDestinationCities.includes(destination)) {
       setDestination(newDestinationCities[0]);
     }
   }
@@ -78,7 +82,6 @@ export default function Home() {
       (callPrice) =>
         callPrice.destination == destination && callPrice.origin == origin,
     );
-    debugger;
     return callPrice ? centsToReal(callTime * callPrice.cents_per_minute) : 0;
   }
 
@@ -95,52 +98,86 @@ export default function Home() {
   }
 
   return (
-    <>
-      <Text>Origem</Text>
-      <Picker
-        selectedValue={origin}
-        onValueChange={(itemValue, itemIndex) => {
-          setOrigin(itemValue.toString());
-          updateDestinationCities(itemValue.toString());
+    <View style={{justifyContent: 'space-between', flex: 1}}>
+      <View
+        style={{
+          flex: 0.9,
+          margin: 20,
+          justifyContent: 'space-between',
         }}>
-        {originCities.map((city) => (
-          <Picker.Item key={'origin-' + city} label={city} value={city} />
-        ))}
-      </Picker>
-      <Text>Destino</Text>
-      <Picker
-        selectedValue={destination}
-        onValueChange={(itemValue, itemIndex) =>
-          setDestination(itemValue.toString())
-        }>
-        {destinationCities.map((city) => (
-          <Picker.Item key={'destination-' + city} label={city} value={city} />
-        ))}
-      </Picker>
-      <Text>Minutos de chamada</Text>
-      <TextInput
-        textContentType="telephoneNumber"
-        dataDetectorTypes="phoneNumber"
-        keyboardType="phone-pad"
-        onChangeText={(text) => {
-          text.replace(/[^0-9]/g, '');
-          setCallTime(parseInt(text || '0'));
-        }}
-        value={callTime.toString()}></TextInput>
-      <Text>Plano</Text>
-      <Picker
-        selectedValue={plan.value}
-        onValueChange={(itemValue, itemIndex) => setPlan(plans[itemIndex])}>
-        {plans.map((plan) => (
-          <Picker.Item
-            key={'plan-' + plan.label}
-            label={plan.label}
-            value={plan.value}
-          />
-        ))}
-      </Picker>
-      <Text>Sem FaleMais: {withoutFaleMais()}</Text>
-      <Text>Com FaleMais: {withFaleMais()}</Text>
-    </>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <MyPicker
+            label="Origem"
+            noValueIcon="phone"
+            currentValue={origin}
+            onValueChange={(itemValue) => {
+              setOrigin(itemValue.toString());
+              updateDestinationCities(itemValue.toString());
+            }}
+            options={originCities}
+            flipNoValueIcon={false}
+            width="48%"
+            backgroundColor={colors.lightBlue}></MyPicker>
+          <MyPicker
+            label="Destino"
+            noValueIcon="phone"
+            currentValue={destination}
+            onValueChange={(itemValue) => {
+              setDestination(itemValue.toString());
+            }}
+            options={destinationCities}
+            flipNoValueIcon={true}
+            width="48%"
+            backgroundColor={colors.lightBlue}
+            disabled={!destinationCities.length}></MyPicker>
+        </View>
+        <MyTextInput
+          label="Minutos de chamada"
+          currentValue={callTime.toString()}
+          onChangeText={(itemValue) => setCallTime(parseInt(itemValue || '0'))}
+          width="100%"
+          height="30%"
+          backgroundColor={colors.lightBlue}
+          textAfter="min"
+          type="only-numbers"></MyTextInput>
+        <MyPicker
+          label="Plano"
+          noValueIcon="dollar"
+          currentValue={plan.label}
+          onValueChange={(itemValue) => setPlan(itemValue)}
+          options={plans}
+          flipNoValueIcon={false}
+          width="100%"
+          height="30%"
+          backgroundColor={colors.lightBlue}></MyPicker>
+        {/* <Text>Sem FaleMais: {withoutFaleMais()}</Text>
+        <Text>Com FaleMais: {withFaleMais()}</Text> */}
+      </View>
+      <View style={{flex: 0.1}}>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: colors.lightRed,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              color: colors.white,
+              fontSize: 25,
+            }}>
+            CALCULAR
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
