@@ -3,7 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:textColor">#000000</item>
+        <item name="android:textColor">#FFFFFF</item>
 
         <!-- Add the following line to set the default status bar color for all the app. -->
         <item name="android:statusBarColor">@color/app_bg</item>
@@ -17,7 +17,7 @@
     <!-- Adds the splash screen definition -->
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/splashscreen_bg</item>
-        <item name="android:background">@drawable/background_splash</item>
+        <item name="android:background">@mipmap/screen</item>
     </style>
 
 </resources>

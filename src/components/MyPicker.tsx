@@ -1,6 +1,6 @@
 import {View, TouchableOpacity, Text} from 'react-native';
 import React from 'react';
-import {colors} from '../styleVariables';
+import {colors, blueSquareStyle} from '../styleVariables';
 import {CustomPicker} from 'react-native-custom-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -11,10 +11,9 @@ interface IProps {
   label: string;
   noValueIcon: string;
   flipNoValueIcon: boolean;
-  width: number | string;
-  height?: number | string;
   backgroundColor: string;
   disabled?: boolean;
+  isSquare?: boolean;
 }
 
 function MyPicker({
@@ -24,10 +23,9 @@ function MyPicker({
   label,
   noValueIcon,
   flipNoValueIcon,
-  width,
-  height,
   backgroundColor,
   disabled,
+  isSquare,
 }: IProps) {
   let pickerRef = React.useRef<CustomPicker>(null);
 
@@ -36,17 +34,13 @@ function MyPicker({
       disabled={disabled}
       onPress={() => (disabled ? null : pickerRef.current?.showOptions())}
       style={{
-        aspectRatio: height ? undefined : 1,
-        width: width,
-        height: height,
+        ...(blueSquareStyle as object),
+        aspectRatio: isSquare ? 1 : undefined,
         backgroundColor: backgroundColor,
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        borderRadius: 20,
         opacity: disabled ? 0.5 : 1,
       }}>
       {currentValue ? (
-        <Text style={{color: colors.white, fontSize: 20}}>{currentValue}</Text>
+        <Text style={{color: colors.white, fontSize: 30}}>{currentValue}</Text>
       ) : (
         <Icon
           name={noValueIcon}
@@ -62,7 +56,29 @@ function MyPicker({
           ref={pickerRef}
           onValueChange={onValueChange}
           options={options}
-          getLabel={(e) => e.label || e}></CustomPicker>
+          getLabel={(e) => e.label || e}
+          modalStyle={{
+            backgroundColor: colors.lightBlue,
+            borderColor: colors.lightRed,
+            borderBottomWidth: 1,
+          }}
+          optionTemplateProps={{
+            containerStyle: {
+              borderColor: colors.lightRed,
+              borderWidth: 1,
+              borderBottomColor: colors.lightRed,
+              borderBottomWidth: 0,
+              justifyContent: 'center',
+              height: 50,
+            },
+            textStyle: {
+              borderColor: colors.lightRed,
+              fontSize: 18,
+            },
+          }}
+          fieldTemplateProps={{
+            clearImage: <View />,
+          }}></CustomPicker>
       </View>
     </TouchableOpacity>
   );
