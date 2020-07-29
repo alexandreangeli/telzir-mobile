@@ -1,3 +1,5 @@
+# telzir-mobile
+
 Aplicativo do projeto Telzir feito em React Native com Typescript, para cálculo dos preços de ligações entre uma origem e um destino com e sem plano;<br />
 
 O usuário escolhe uma cidade origem, uma cidade destino, insere o tempo de uma ligação, e escolhe um plano ofericado pela Telzir;<br />
